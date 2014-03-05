@@ -8,42 +8,46 @@
 
 #import "CardFlipViewController.h"
 #import "PlayingCardDeck.h"
+#import "CardMatchingGame.h"
 
 @interface CardFlipViewController ()
 
-    @property (weak, nonatomic) IBOutlet UILabel *flipCountLabel;
-    @property (nonatomic) int count;
-    @property (nonatomic) Deck *deck;
-
+@property (nonatomic) CardMatchingGame *game;
+@property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
 @end
 
 @implementation CardFlipViewController
 
-- (Deck *) deck {
-    if (!_deck) _deck = [[PlayingCardDeck alloc] init];
-    return _deck;
+- (CardMatchingGame *) game {
+    if (!_game) _game = [[CardMatchingGame alloc]
+                         initWithCardCount:[self.cardButtons count]
+                         usingDeck:[self createDeck]];
+    return _game;
 }
 
-- (void)setCount:(int)count {
-    _count = count;
-    self.flipCountLabel.text = [NSString stringWithFormat:@"%d Flips", self.count];
+- (Deck *)createDeck {
+    return [[PlayingCardDeck alloc] init];
 }
 
 - (IBAction)flipCard:(UIButton *)sender {
-    if ([sender.currentTitle length] == 0) {
-        [sender setBackgroundImage:nil
+    [self.game chooseCardAtIndex:[self.cardButtons indexOfObject:sender]];
+    
+    for (UIButton *button in self.cardButtons) {
+        NSUInteger index = [self.cardButtons indexOfObject:button];
+        Card *card = [self.game cardAtIndex:index];
+        [button setBackgroundImage:[self getBackgroundImageForCard:card]
                           forState:UIControlStateNormal];
-        [sender setTitle:[self.deck drawRandomCard].contents
+        [button setTitle:[self getTitleForCard:card]
                 forState:UIControlStateNormal];
-    } else {
-        UIImage *background = [UIImage imageNamed:@"Card Back.png"];
-        [sender setBackgroundImage:background forState:UIControlStateNormal];
-        [sender setTitle:nil forState:UIControlStateNormal];
     }
-    
-    self.count++;
-    
-    NSLog(@"Card Flipped");
+}
+
+- (UIImage *) getBackgroundImageForCard:(Card *) card {
+    return card.isChosen ? nil : [UIImage imageNamed:@"Card Back"];
+}
+
+- (NSString *) getTitleForCard:(Card *) card {
+    return card.isChosen ? card.contents : @"";
 }
 
 @end
