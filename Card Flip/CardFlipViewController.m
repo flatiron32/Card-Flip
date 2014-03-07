@@ -30,9 +30,7 @@
     return [[PlayingCardDeck alloc] init];
 }
 
-- (IBAction)flipCard:(UIButton *)sender {
-    [self.game chooseCardAtIndex:[self.cardButtons indexOfObject:sender]];
-    
+- (void)drawUI {
     for (UIButton *button in self.cardButtons) {
         NSUInteger index = [self.cardButtons indexOfObject:button];
         Card *card = [self.game cardAtIndex:index];
@@ -45,6 +43,12 @@
     self.scoreLabel.text = [NSString stringWithFormat:@"Score: %ld", (long) self.game.score];
 }
 
+- (IBAction)flipCard:(UIButton *)sender {
+    [self.game chooseCardAtIndex:[self.cardButtons indexOfObject:sender]];
+    
+    [self drawUI];
+}
+
 - (UIImage *) getBackgroundImageForCard:(Card *) card {
     return card.isChosen ? nil : [UIImage imageNamed:@"Card Back"];
 }
@@ -53,4 +57,8 @@
     return card.isChosen ? card.contents : @"";
 }
 
+- (IBAction)reDeal:(id)sender {
+    self.game = nil;
+    [self drawUI];
+}
 @end
