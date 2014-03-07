@@ -14,6 +14,7 @@
 
 @property (nonatomic) CardMatchingGame *game;
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
+@property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
 @end
 
 @implementation CardFlipViewController
@@ -40,6 +41,8 @@
         [button setTitle:[self getTitleForCard:card]
                 forState:UIControlStateNormal];
     }
+    
+    self.scoreLabel.text = [NSString stringWithFormat:@"Score: %ld", (long) self.game.score];
 }
 
 - (UIImage *) getBackgroundImageForCard:(Card *) card {

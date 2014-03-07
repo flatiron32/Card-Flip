@@ -10,4 +10,14 @@
 
 @implementation Card
 
+- (NSInteger) match:(NSArray *)otherCards {
+    for (Card *otherCard in otherCards) {
+        if (self.contents == otherCard.contents) {
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
 @end

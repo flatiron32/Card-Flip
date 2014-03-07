@@ -8,8 +8,13 @@
 
 #import "CardMatchingGame.h"
 
+static const int MISMATCH_PENALTY = 2;
+static const int MATCH_BONUS = 4;
+static const int COST_TO_CHOOSE = 1;
+
 @interface CardMatchingGame()
 @property (strong, nonatomic) NSMutableArray *cards;
+@property (readwrite) NSInteger score;
 @end
 
 @implementation CardMatchingGame
@@ -34,15 +39,32 @@
 }
 
 - (void)chooseCardAtIndex:(NSUInteger)index {
-    for (Card *card in self.cards) {
-        if (!card.isMatched) {
+    Card *card = self.cards[index];
+
+    if (!card.isMatched) {
+        if (card.isChosen) {
             card.chosen = NO;
+        } else {
+            for (Card *otherCard in self.cards) {
+                if (otherCard.isChosen && !otherCard.isMatched) {
+                    NSInteger matchScore = [card match:@[otherCard]];
+                    
+                    if (matchScore) {
+                        self.score += matchScore * MATCH_BONUS;
+                        otherCard.matched = YES;
+                        card.matched = YES;
+                    } else {
+                        self.score -= MISMATCH_PENALTY;
+                        otherCard.chosen = NO;
+                    }
+                    break;
+                }
+            }
+            
+            self.score -= COST_TO_CHOOSE;
+            card.chosen = YES;
         }
     }
-
-    Card *card = self.cards[index];
-    if (card.chosen)
-    card.chosen = YES;
 }
 
 -(Card *)cardAtIndex:(NSUInteger)index {
