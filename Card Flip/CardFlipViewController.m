@@ -15,14 +15,20 @@
 @property (nonatomic) CardMatchingGame *game;
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *cardMatch;
 @end
 
 @implementation CardFlipViewController
 
 - (CardMatchingGame *) game {
-    if (!_game) _game = [[CardMatchingGame alloc]
-                         initWithCardCount:[self.cardButtons count]
-                         usingDeck:[self createDeck]];
+    if (!_game) {
+        _game = [[CardMatchingGame alloc]
+                 initWithCardCount:[self.cardButtons count]
+                 usingDeck:[self createDeck]];
+        _game.matchCount = self.cardMatch.selectedSegmentIndex + 2;
+        NSLog(@"Game is matching %lu cards", _game.matchCount);
+    }
+    
     return _game;
 }
 
