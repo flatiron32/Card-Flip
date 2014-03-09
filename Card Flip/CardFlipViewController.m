@@ -36,23 +36,24 @@
     return [[PlayingCardDeck alloc] init];
 }
 
-- (void)drawUI {
+- (void)drawUI:(CardMatchingGame *) game {
     for (UIButton *button in self.cardButtons) {
         NSUInteger index = [self.cardButtons indexOfObject:button];
-        Card *card = [self.game cardAtIndex:index];
+        Card *card = [game cardAtIndex:index];
         [button setBackgroundImage:[self getBackgroundImageForCard:card]
                           forState:UIControlStateNormal];
         [button setTitle:[self getTitleForCard:card]
                 forState:UIControlStateNormal];
     }
     
-    self.scoreLabel.text = [NSString stringWithFormat:@"Score: %ld", (long) self.game.score];
+    self.scoreLabel.text = [NSString stringWithFormat:@"Score: %ld", (long) game.score];
 }
 
 - (IBAction)flipCard:(UIButton *)sender {
+    self.cardMatch.enabled = NO;
     [self.game chooseCardAtIndex:[self.cardButtons indexOfObject:sender]];
     
-    [self drawUI];
+    [self drawUI:self.game];
 }
 
 - (UIImage *) getBackgroundImageForCard:(Card *) card {
@@ -65,6 +66,7 @@
 
 - (IBAction)reDeal:(id)sender {
     self.game = nil;
-    [self drawUI];
+    [self drawUI:nil];
+    self.cardMatch.enabled = YES;
 }
 @end
